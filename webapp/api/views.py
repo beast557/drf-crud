@@ -14,8 +14,45 @@ from rest_framework import status
 # class-bassed view
 from rest_framework.views import APIView
 
-class ListPosts(APIView):
+#Generic views
+from rest_framework import generics
+from rest_framework import mixins
 
+class GenericPostView(
+generics.GenericAPIView,
+mixins.ListModelMixin,
+mixins.CreateModelMixin):
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    def get(self,request):
+        return self.list(request)
+
+    def post(self,request):
+        return self.create(request)
+
+
+class GenericPostsView(
+generics.GenericAPIView,
+mixins.UpdateModelMixin,
+mixins.DestroyModelMixin
+):
+
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    lookup_field = 'id'
+
+    def get(self,request,id=None):
+        return self.retrieve(request)
+
+    def put(self, request,id=None):
+        return self.update(request,id)
+
+    def delete(self,request,id=None):
+        return self.destroy(request,id)
+
+class ListPosts(APIView):
     def get(self, request):
         posts = Post.objects.all()
         serializer = PostSerializer(posts,many=True)
@@ -23,7 +60,6 @@ class ListPosts(APIView):
 
     def post():
         serializer = PostSerializer(data=request.data)
-
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
@@ -53,7 +89,6 @@ class PostDetails(APIView):
         post = self.get_object(id)
         post.delete()
         return Response(status=status.HTTP_200_OK)
-
 
 
 # function based views
