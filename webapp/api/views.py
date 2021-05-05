@@ -11,6 +11,38 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+# class-bassed view
+from rest_framework.views import APIView
+
+class ListPosts(APIView):
+
+    def get(self, request):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts,many=True)
+        return Response(serializer.data)
+
+    def post():
+        serializer = PostSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostDetails(APIView):
+    def get_object(self,id):
+        try:
+            return Post.objects.get(id=id)
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self,request,id):
+        post = self.get_object(id)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
+
+
+# function based views
 @api_view(['GET'])
 def post_list(request):
     if request.method == 'GET':
@@ -19,7 +51,7 @@ def post_list(request):
         return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def post_create(request):
 
     if request.method ==   'POST':
