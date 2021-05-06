@@ -6,6 +6,7 @@ from webapp.models import Post
 from .serializers import PostSerializer
 from django.views.decorators.csrf import csrf_exempt
 
+
 # api view
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -18,13 +19,20 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import mixins
 
+# token auth
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
 class GenericPostView(
 generics.GenericAPIView,
 mixins.ListModelMixin,
 mixins.CreateModelMixin):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
-
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def get(self,request):
         return self.list(request)
 
@@ -40,8 +48,9 @@ mixins.DestroyModelMixin
 
     serializer_class = PostSerializer
     queryset = Post.objects.all()
-
     lookup_field = 'id'
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request,id=None):
         return self.retrieve(request)

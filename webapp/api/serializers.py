@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from webapp.models import Post
 
-
-
 # class PostSerializer(serializers.Serializer):
 #     title = serializers.CharField(max_length = 100)
 #     body = serializers.CharField(max_length=300)
@@ -24,4 +22,3 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id','title','author','body']
-
